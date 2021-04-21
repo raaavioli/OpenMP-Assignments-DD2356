@@ -82,41 +82,38 @@ int main(int argc, char* argv[]){
   return 1;
 }
 
-
-struct ThreadSum {
-  double sum_r, sum_i; char padding[128];
-};
+struct PaddingBlock { double r, i; char pad[128]; };
 
 // DFT/IDFT routine
 // idft: 1 direct DFT, -1 inverse IDFT (Inverse DFT)
 int DFT(int idft, double* xr, double* xi, double* Xr_o, double* Xi_o, int N) {
+  struct PaddingBlock pad_block[N];
   #pragma omp parallel 
   {
-    struct ThreadSum local_sums[N];
-
-    #pragma omp for schedule(static)
+    #pragma omp for
     for (int k = 0; k < N; k++) {
+      pad_block[k].r = 0.0;
+      pad_block[k].i = 0.0;
       for (int n = 0; n < N; n++)  {
         // Real part of X[k]
-        local_sums[k].sum_r += xr[n] * cos(n * k * PI2 / N) + idft*xi[n]*sin(n * k * PI2 / N);
+        pad_block[k].r += xr[n] * cos(n * k * PI2 / N) + idft*xi[n] * sin(n * k * PI2 / N);
         // Imaginary part of X[k]
-        local_sums[k].sum_i += -idft*xr[n] * sin(n * k * PI2 / N) + xi[n] * cos(n * k * PI2 / N);
+        pad_block[k].i += xi[n] * cos(n * k * PI2 / N) - idft*xr[n] * sin(n * k * PI2 / N);
       }
-    }
-
-    #pragma omp for schedule(static)
-    for (int i = 0; i < N; i++) {
       // normalize if you are doing IDFT 
       if (idft==-1) {
-          local_sums[i].sum_r /= N;
-          local_sums[i].sum_i /= N;
+          pad_block[k].r /= N;
+          pad_block[k].i /= N;
       }
+    }
 
-      Xr_o[i] = local_sums[i].sum_r;
-      Xi_o[i] = local_sums[i].sum_i;
+    #pragma omp for
+    for (int k = 0; k < N; k++) {
+      Xr_o[k] = pad_block[k].r;
+      Xi_o[k] = pad_block[k].i;
     }
   }
-  return 1; 
+  return 1;
 }
 
 // set the initial signal 
