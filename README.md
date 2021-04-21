@@ -26,14 +26,21 @@ g++ sum.cpp -fopenmp -o sum.out
 ```
 ### Run
 #### Serial execution
+```
 ./sum.out
+```
 
 #### Parallel execution
+```
 ./sum.out \<critical|omp|local|opt_local\> <num_threads>
+```
 
 **critical**: Implementation using *omp critical*
+
 **omp**: Implementation using *omp reduction*
+
 **local**: Implementation calculating a local sum for each thread, and adding the results.
+
 **opt\_local**: Same as local, except padding the thread local sums to avoid false sharing.
 
 ## Exercise 4 - DFTW
