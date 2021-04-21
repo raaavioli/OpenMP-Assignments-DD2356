@@ -2,6 +2,8 @@
 
 Programs assume your system supports OpenMP.
 
+An important notice is that the program should be compiled with *CC*/*cc* and not *g++*/*gcc* if ran on KTH's supercomputer Beskow.
+
 Questions and answers found on in [Google Docs](https://docs.google.com/document/d/1FMxgF0iNZ_2GWpm6JD9HD5PVGMx_ttCodM93w1tB8Ac/edit?usp=sharing).
 
 ## Exercise 1 - HelloOpenMP
@@ -44,6 +46,20 @@ g++ sum.cpp -fopenmp -o sum.out
 **opt\_local**: Same as local, except padding the thread local sums to avoid false sharing.
 
 ## Exercise 4 - DFTW
+Exercise 4 relates to optimizing a serial DFT implementation using OpenMP. 
+
 ### Build
+```
+g++ DFTW_1.c -fopenmp -O2 -o dftw.out
+```
 
 ### Run
+```
+./dftw
+```
+
+#### Number of threads
+Change number of threads by setting the environment variable **OMP_NUM_THREADS** in your system.
+```
+export OMP_NUM_THREADS=<num_threads>
+```
