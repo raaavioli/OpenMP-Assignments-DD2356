@@ -32,7 +32,7 @@ g++ sum.cpp -fopenmp -o sum.out
 
 #### Parallel execution
 ```
-./sum.out \<critical|omp|local|opt_local\> <num_threads>
+./sum.out <critical|omp|local|opt_local> <num_threads>
 ```
 
 **critical**: Implementation using *omp critical*
